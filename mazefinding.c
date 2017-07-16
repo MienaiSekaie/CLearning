@@ -23,7 +23,7 @@ int is_empty(void)
 
 int maze[MAX_ROW][MAX_COL] = {
     0, 1, 0, 0, 0,
-    0, 1, 0, 1, 0,
+    0, 1, 1, 1, 0,
     0, 0, 0, 0, 0,
     0, 1, 1, 1, 0,
     0, 0, 0, 1, 0
@@ -48,43 +48,70 @@ struct point predecessor[MAX_ROW][MAX_COL] = {
     {{-1, -1}, {-1, -1}, {-1, -1}, {-1, -1}, {-1, -1}},
 };
 
-void visit(int row, int col, struct point pre)
+int visit(int row, int col, struct point pre)
 {
     struct point visit_point = {row, col};
-    maze[row][col] = 2;
-    predecessor[row][col] = pre;
-    push(visit_point);
+    int flag = 1;
+    //maze[row][col] = 2;
+    //predecessor[row][col] = pre;
+    //push(visit_point);
+    print_maze();
+    if (visit_point.row == MAX_ROW - 1 && visit_point.col == MAX_COL - 1)
+        return 0;
+    if (visit_point.col + 1 < MAX_COL && maze[visit_point.row][visit_point.col + 1] == 0 && flag)
+        flag = visit(visit_point.row, visit_point.col + 1, visit_point);
+    if (visit_point.row + 1 < MAX_ROW && maze[visit_point.row + 1][visit_point.col] == 0 && flag)
+        flag = visit(visit_point.row + 1, visit_point.col, visit_point);
+    if (visit_point.col - 1 >= 0 && maze[visit_point.row][visit_point.col - 1] == 0 && flag)
+        flag = visit(visit_point.row, visit_point.col - 1, visit_point);
+    if (visit_point.row - 1 >= 0 && maze[visit_point.row - 1][visit_point.col] == 0 && flag)
+        flag = visit(visit_point.row - 1, visit_point.col, visit_point);
+}
+
+void print_road(struct point p){
+    if (predecessor[p.row][p.col].row != -1)
+        print_road(predecessor[p.row][p.col]);
+    printf("(%d, %d)\n", p.row, p.col);
 }
 
 int main(void)
 {
-    struct point p = {0, 0};
-
+    struct point p = {0, 0}, b = {-1, -1};
+    int a;
     maze[p.row][p.col] = 2;
-    push(p);
 
-    while (!is_empty()){
-        p = pop();
-        if (p.row == MAX_ROW - 1 && p.col == MAX_COL - 1)
-            break;
-        if (p.col + 1 < MAX_COL && maze[p.row][p.col + 1] == 0)
-            visit(p.row, p.col + 1, p);
-        if (p.row + 1 < MAX_ROW && maze[p.row + 1][p.col] == 0)
-            visit(p.row + 1, p.col, p);
-        if (p.col - 1 >= 0 && maze[p.row][p.col - 1] == 0)
-            visit(p.row, p.col - 1, p);
-        if (p.row - 1 >= 0 && maze[p.row - 1][p.col] == 0)
-            visit(p.row - 1, p.col, p);
-        print_maze();
-    }
-    if (p.row == MAX_ROW - 1 && p.col == MAX_COL - 1){
-        printf("(%d, %d)\n", p.row, p.col);
-        while (predecessor[p.row][p.col].row != -1){
-            p = predecessor[p.row][p.col];
-            printf("(%d, %d)\n", p.row, p.col);
-        }
-    }else
-        printf("No Path!");
-
+     a = visit(p.row, p.col, b);
+    // if (p.row == MAX_ROW - 1 && p.col == MAX_COL - 1){
+    //     print_road(p);
+    // }else
+    //     printf("No Path!");
     return 0;
 }
+
+// int main(void)
+// {
+//     struct point p = {0, 0};
+//
+//     maze[p.row][p.col] = 2;
+//     push(p);
+//
+//     while (!is_empty()){
+//         p = pop();
+//         if (p.row == MAX_ROW - 1 && p.col == MAX_COL - 1)
+//             break;
+//         if (p.col + 1 < MAX_COL && maze[p.row][p.col + 1] == 0)
+//             visit(p.row, p.col + 1, p);
+//         if (p.row + 1 < MAX_ROW && maze[p.row + 1][p.col] == 0)
+//             visit(p.row + 1, p.col, p);
+//         if (p.col - 1 >= 0 && maze[p.row][p.col - 1] == 0)
+//             visit(p.row, p.col - 1, p);
+//         if (p.row - 1 >= 0 && maze[p.row - 1][p.col] == 0)
+//             visit(p.row - 1, p.col, p);
+//         print_maze();
+//     }
+//     if (p.row == MAX_ROW - 1 && p.col == MAX_COL - 1){
+//         print_road(p);
+//     }else
+//         printf("No Path!");
+//     return 0;
+// }
